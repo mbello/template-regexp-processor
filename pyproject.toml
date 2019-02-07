@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "template-regexp-processor"
+version = "0.1.1"
+license = "CC0"
+readme = "README.md"
+description = "Customizable RegExp Processor for Text Files. Provides a generic engine and a specialized TEX preprocessor built on top of the generic engine."
+authors = ["mbello <mbello@users.noreply.github.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+
+[tool.poetry.dev-dependencies]
+pytest = "^3.0"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
