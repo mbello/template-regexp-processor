@@ -1,0 +1,93 @@
+\documentclass[10pt]{article}
+\nofiles
+\usepackage[paperwidth=72mm, paperheight=300mm, top=3.5mm, left=0mm,bottom=3.5mm, right=0mm]{geometry}
+\usepackage[T1]{fontenc} 
+
+\usepackage{helvet}
+\usepackage{parskip}
+\usepackage{datetime2}
+\usepackage[nolinks]{qrcode}
+\usepackage{listings}
+
+\usepackage[Q=yes]{examplep}
+\def\jinja2{0}
+%= "\def\jinja2{1}" %
+
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\tabcolsep}{0pt}
+
+\textwidth 72mm
+
+\begin{document}
+
+
+\def\numeropedido{numero}
+\def\datetimepedido{date\_confirmed}
+\def\vendedorramal{user\_id.ramal}
+\def\vendedornome{user\_id.nome}
+\def\observacao{obs\_produto}
+\def\codcliente{participante\_id.codigo}
+\def\nomecliente{participante\_id.nome}
+\def\cep{participante\_id.cep}
+\def\endereco{participante\_id.endereco}
+\def\numero{participante\_id.numero}
+\def\complemento{participante\_id.complemento}
+\def\bairro{participante\_id.bairro}
+\def\cidade{participante\_id.cidade}
+\def\estado{participante\_id.estado}
+
+\fontfamily{phv}\selectfont
+
+\begin{minipage}{24mm}
+\begin{center}
+\qrcode[level=H, nolink, height=20mm, forget]{ \numeropedido }
+\end{center}
+\end{minipage}
+\begin{minipage}{47mm}
+\begin{flushright}
+\tiny impresso em \DTMnow
+\vskip 2pt
+\LARGE\textbf{\numeropedido}
+
+
+\scriptsize \datetimepedido - \vendedornome \vendedorramal
+\vskip 2pt
+\footnotesize [\codcliente] \nomecliente
+\end{flushright}
+\end{minipage}
+
+
+\vskip 6pt
+\footnotesize\textbf{SEDEX} - CEP \cep\\
+\footnotesize \endereco, \numero\ - \complemento
+
+\footnotesize \bairro\ - \cidade/\estado
+\vskip 3pt
+
+
+\hrule\vskip 1pt\hrule\vskip 5pt
+\footnotesize\textbf{OBS: }\observacao
+\vskip 5pt
+\hrule\vskip 1pt
+
+%= for i in item_produto_ids
+
+\def\codproduto{i.codigo}
+\def\nomeproduto{i.nome}
+\def\quantidade{i.quantidade}
+\def\unidade{i.unidade_id.codigo}
+
+\hrule\vskip 3pt
+\footnotesize\textbf{\nomeproduto}
+\vskip 1pt
+\footnotesize \codproduto \hfill \textbf{\quantidade} \unidade
+\vskip 1pt
+
+%= endfor
+
+
+\hrule\vskip 1pt\hrule\vskip 1pt\hrule
+
+\end{document}

@@ -1,15 +1,14 @@
 import re
 import typing
-from typing import Dict, Any
-
 from template_regexp_processor import transf
 
 
+
 class GenericRegExpProcessor:
-    enabled_user_rules: Dict[str, list[typing.Pattern, callable]]
-    all_user_rules: Dict[str, list[typing.Pattern, callable]]
+    enabled_user_rules: dict
+    all_user_rules: dict
     command_test: typing.Pattern
-    commands: Dict[str, list[typing.Pattern, callable]]
+    commands: dict
     n_skip: int
     on: bool
     discard: int
@@ -53,7 +52,7 @@ class GenericRegExpProcessor:
     def inline_command(self, match: typing.Match):
         gs = match.groups()
         command = gs[0]
-        arg = gs[1]
+        arg = gs[1] if len(gs) >= 2 else None
         
         cmd = None
         if arg:
@@ -67,9 +66,9 @@ class GenericRegExpProcessor:
             elif command == 'skip':
                 self.n_skip = int(arg)
             elif command == 'discard':
-                if self.discard == 'on':
+                if arg == 'on':
                     self.discard = 1
-                elif self.discard == 'on+':
+                elif arg == 'on+':
                     self.discard = 2
                 else:
                     self.discard = False
@@ -120,7 +119,7 @@ class GenericRegExpProcessor:
         
         self.add_rule(rule_name, rule_func, rule_re)
 
-    def use_custom_commands(self, command_test: typing.Pattern, commands: Dict[str, list[typing.Pattern, callable]]):
+    def use_custom_commands(self, command_test: typing.Pattern, commands: dict):
         self.command_test = command_test
         self.commands = commands
 
@@ -129,11 +128,11 @@ class GenericRegExpProcessor:
         self.comment_begin = comment_mark_begin
         self.comment_end = "" if comment_mark_end is None else comment_mark_end
         self.command_test = re.compile(trailing_exp + r"\s*regexp-processor\s+(.+?)\s*" + ending_exp)
-        self.commands['switch'] = [re.compile(r"^\s+(.+?)\s*$"), self.inline_command]
-        self.commands['config'] = [re.compile(r"^\s+(.+?)\s+(.+?)\s*$"), self.inline_command]
+        self.commands['config'] = [re.compile(r"^(.+?)\s+(.+?)\s*$"), self.inline_command]
+        self.commands['switch'] = [re.compile(r"^(.+?)\s*$"), self.inline_command]
         self.commands['add_rule'] = [re.compile(r"^\[(\w+?)\]\s+(.+?)+\s+([+=#])\s*(.*?)\s*$"), self.inline_add_rule]
     
-    async def run(self, base_file, start_on: bool = True):
+    def run(self, base_file, start_on: bool = True):
         self.on = start_on
         
         for line in base_file:
@@ -149,15 +148,14 @@ class GenericRegExpProcessor:
                 for r in self.commands.values():
                     m = r[0].match(line)
                     if m:
-                        yield(r[1](m))
+                        r[1](m)
                         break
             elif self.on and self.discard != 2:
                 for r in self.enabled_user_rules.values():
-                    m = r[0].match()
+                    m = r[0].match(line)
                     if m:
                         yield(r[1](line, m))
-                        continue
-                
-            if not self.discard:
-                yield(line + '\n')
-        return
+                        break
+            
+            if not m and not self.discard:
+                yield(line)

@@ -6,7 +6,7 @@ def drop(line: str, match: typing.Match):
 
 
 def copy(line: str, match: typing.Match):
-    return "{}\n".format(line)
+    return "{}".format(line)
 
 
 def comment_out_closure(comment_before: str, comment_after: str = None):
@@ -14,7 +14,7 @@ def comment_out_closure(comment_before: str, comment_after: str = None):
         comment_after = ""
         
     def comment_out(line: str, match: typing.Match):
-        return "{} {} {}\n".format(comment_before, line, comment_after)
+        return "{} {} {}".format(comment_before, line, comment_after)
     return comment_out
 
 
